@@ -1,7 +1,7 @@
-import type { Result } from '@modelcontextprotocol/client';
 import { Client, InMemoryTransport } from '@modelcontextprotocol/client';
-import { ResultSchema } from '@modelcontextprotocol/core';
+import { JSONRPCMessage } from '@modelcontextprotocol/server';
 import { describe, expect, it, vi } from 'vitest';
+import { z } from 'zod';
 
 import { registerSkillMethodHandlers } from './methods.js';
 import { type SkillRegistry } from './registry.js';
@@ -33,38 +33,54 @@ function makeRegistry(skills: SkillEntry[]): SkillRegistry {
 async function listSkills(
   registry: SkillRegistry,
   params?: Record<string, unknown>,
-): Promise<Result> {
-  const { McpServer } = await vi.importActual<
-    typeof import('@modelcontextprotocol/sdk/server/mcp.js')
-  >('@modelcontextprotocol/server');
+): Promise<JSONRPCMessage[]> {
+  const { McpServer } = await vi.importActual<typeof import('@modelcontextprotocol/server')>(
+    '@modelcontextprotocol/server',
+  );
   const mcpServer = new McpServer({ name: 'test', version: '0.0.0' });
   registerSkillMethodHandlers(mcpServer, registry);
 
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+  const wire: JSONRPCMessage[] = [];
+  const send = serverTransport.send.bind(serverTransport);
+  serverTransport.send = (message, options) => {
+    wire.push(message);
+    return send(message, options);
+  };
   const client = new Client({ name: 'test-client', version: '0.0.0' });
   await Promise.all([mcpServer.connect(serverTransport), client.connect(clientTransport)]);
-  const result = await client.request({ method: 'skills/list', params }, ResultSchema);
+  // v2 clients lift `resultType` off the decoded result. The JSON-RPC body still carries it.
+  await client.request(
+    { method: 'skills/list', params },
+    z.object({ skills: z.array(z.unknown()) }),
+  );
   await client.close();
 
-  return result;
+  return wire;
 }
 
 describe('skills/list', () => {
   it('returns every skill entry with resultType complete', async () => {
-    const result = await listSkills(makeRegistry([SKILL]), {});
+    const wire = await listSkills(makeRegistry([SKILL]), {});
 
-    expect(result).toEqual({ resultType: 'complete', skills: [SKILL] });
+    expect(wire.at(-1)).toMatchObject({
+      result: { resultType: 'complete', skills: [SKILL] },
+    });
   });
 
   it('accepts a request with no params', async () => {
-    const result = await listSkills(makeRegistry([SKILL]));
+    const wire = await listSkills(makeRegistry([SKILL]));
 
-    expect(result).toEqual({ resultType: 'complete', skills: [SKILL] });
+    expect(wire.at(-1)).toMatchObject({
+      result: { resultType: 'complete', skills: [SKILL] },
+    });
   });
 
   it('returns an empty list when there are no skills', async () => {
-    const result = await listSkills(makeRegistry([]), {});
+    const wire = await listSkills(makeRegistry([]), {});
 
-    expect(result).toEqual({ resultType: 'complete', skills: [] });
+    expect(wire.at(-1)).toMatchObject({
+      result: { resultType: 'complete', skills: [] },
+    });
   });
 });

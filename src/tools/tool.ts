@@ -1,6 +1,5 @@
 import { CallToolResult, RequestId, ToolAnnotations } from '@modelcontextprotocol/server';
 import { Result } from 'ts-results-es';
-import { z, ZodRawShape, ZodTypeAny } from 'zod';
 
 import { McpToolError } from '../errors/mcpToolError.js';
 import { getNotificationMessageForTool, notifier } from '../logging/notification.js';
@@ -8,6 +7,7 @@ import { Server } from '../server.js';
 import { TypeOrProvider } from '../utils/provider.js';
 import { TableauRequestHandlerExtra, TableauToolCallback } from './toolContext.js';
 import { ToolName } from './toolName.js';
+import { AnySchema, SchemaOutput, ShapeOutput, ZodRawShapeCompat } from './zodShape.js';
 
 /**
  * The parameters for creating a tool instance
@@ -63,8 +63,8 @@ export type LogAndExecuteParams<
   extra: TExtra;
 
   // The arguments of the tool call
-  args: Args extends ZodRawShape
-    ? z.objectOutputType<Args, ZodTypeAny>
+  args: Args extends ZodRawShapeCompat
+    ? ShapeOutput<Args>
     : Args extends AnySchema
       ? SchemaOutput<Args>
       : undefined;

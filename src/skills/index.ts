@@ -1,7 +1,10 @@
 import { readFile } from 'node:fs/promises';
 
-import type { ReadResourceResult } from '@modelcontextprotocol/server';
-import { ProtocolError, ProtocolErrorCode } from '@modelcontextprotocol/server';
+import {
+  ProtocolError,
+  ProtocolErrorCode,
+  type ReadResourceResult,
+} from '@modelcontextprotocol/server';
 
 import { getFeatureGate } from '../features/init.js';
 import { log } from '../logging/logger.js';

@@ -27,7 +27,6 @@ vi.mock('node:fs/promises', () => ({
 }));
 
 import { registerSkills } from './index.js';
-import { SkillsListRequestSchema } from './types.js';
 
 type SkillFile = { uri: string; path: string; mimeType: string };
 type ServerArg = Parameters<typeof registerSkills>[0];
@@ -97,7 +96,11 @@ describe('registerSkills', () => {
     await registerSkills(server);
 
     expect(setRequestHandler).toHaveBeenCalledTimes(1);
-    expect(setRequestHandler).toHaveBeenCalledWith(SkillsListRequestSchema, expect.any(Function));
+    expect(setRequestHandler).toHaveBeenCalledWith(
+      'skills/list',
+      expect.objectContaining({ params: expect.anything() }),
+      expect.any(Function),
+    );
   });
 
   it('registers one resource per skill file when enabled', async () => {

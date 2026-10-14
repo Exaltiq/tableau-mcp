@@ -32,12 +32,19 @@ export const mcpTokenSchema = z
       }),
     ],
     {
-      errorMap: (issue, ctx) => ({
-        message:
-          issue.code === 'invalid_union_discriminator'
-            ? `grant_type must be ${issue.options.map((opt) => `'${String(opt)}'`).join(' | ')}, got '${ctx.data.grant_type}'.`
-            : ctx.defaultError,
-      }),
+      error: (issue) => {
+        if (issue.code === 'invalid_union' && Array.isArray(issue.options)) {
+          const data = issue.input;
+          const got =
+            data && typeof data === 'object' && 'grant_type' in data
+              ? String(data.grant_type)
+              : String(data);
+          return {
+            message: `grant_type must be ${issue.options.map((opt) => `'${String(opt)}'`).join(' | ')}, got '${got}'.`,
+          };
+        }
+        return undefined;
+      },
     },
   )
   .and(

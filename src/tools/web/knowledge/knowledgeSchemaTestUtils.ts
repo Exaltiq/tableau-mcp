@@ -1,25 +1,16 @@
-/* @mcp-codemod-error Unknown SDK import path: @modelcontextprotocol/sdk/server/zod-json-schema-compat.js. Manual migration required. */
-import { toJsonSchemaCompat } from '@modelcontextprotocol/sdk/server/zod-json-schema-compat.js';
+import { z } from 'zod';
+
+import { objectFromShape, ZodRawShapeCompat } from '../../zodShape.js';
 
 /**
- * Reproduces exactly what the MCP SDK does to advertise a tool's `inputSchema` to clients (see
- * `_createRegisteredTool` / `ListToolsRequestSchema` handler in
- * `@modelcontextprotocol/sdk/server/mcp.js`):
- *
- * 1. Registration time: a raw params shape is converted to a real Zod object via
- *    `objectFromShape` (`getZodSchemaObject`).
- * 2. Listing time: `normalizeObjectSchema` is a no-op once the schema already has a `.shape`, then
- *    `toJsonSchemaCompat` converts it to JSON Schema with the same options the SDK uses.
- *
- * Used in tests to assert the *advertised* schema — not just runtime parsing — has non-empty
- * `properties`. This is the exact bug fixed by flattening the knowledge tools' discriminated
- * union schemas: a z.discriminatedUnion (or a .superRefine wrapper around one) has no top-level
- * `.shape`, so this same conversion previously produced `{"type":"object","properties":{}}`.
+ * Reproduces the JSON Schema a raw tool params shape is advertised as.
+ * v2 converts registered shapes with Zod 4 (`z.toJSONSchema`).
  */
 export function advertisedInputSchema(paramsShape: ZodRawShapeCompat): Record<string, unknown> {
-  const objectSchema = objectFromShape(paramsShape);
-  return toJsonSchemaCompat(objectSchema, {
-    strictUnions: true,
-    pipeStrategy: 'input',
+  return z.toJSONSchema(z.object(paramsShape), {
+    io: 'input',
+    target: 'draft-2020-12',
   }) as Record<string, unknown>;
 }
+
+export { objectFromShape };

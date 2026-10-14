@@ -27,6 +27,7 @@ import { extractToolErrorMessage } from '../../utils/extractToolErrorMessage.js'
 import { getExceptionMessage } from '../../utils/getExceptionMessage.js';
 import { getHttpStatus } from '../../utils/getHttpStatus.js';
 import { LogAndExecuteParams, Tool, ToolParams } from '../tool.js';
+import { AnySchema, ZodRawShapeCompat } from '../zodShape.js';
 import { RegistrationCondition } from './registrationConditions.js';
 import { TableauWebRequestHandlerExtra, TableauWebToolCallback } from './toolContext.js';
 import { WebToolName } from './toolName.js';
@@ -330,7 +331,7 @@ export class WebTool<
         errorCode,
         oauthClientId: sanitizedClientId,
         clientName,
-        userAgent: extra.requestInfo?.headers?.['user-agent'],
+        userAgent: extra.http?.req?.headers.get('user-agent') ?? undefined,
         mcpRequestId: requestId.toString(),
         object: getActivityLogObject(this.name, args),
       });

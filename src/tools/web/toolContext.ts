@@ -4,7 +4,8 @@ import { Config } from '../../config.js';
 import { OverridableConfig } from '../../overridableConfig.js';
 import { WebMcpServer } from '../../server.web.js';
 import { TableauAuthInfo } from '../../server/oauth/schemas.js';
-import { TableauToolCallback, TableauToolContext } from '../toolContext.js';
+import { HandlerCompatFields, TableauToolCallback, TableauToolContext } from '../toolContext.js';
+import { AnySchema, ZodRawShapeCompat } from '../zodShape.js';
 
 // Additional context available to all web tool callbacks
 export type TableauWebToolContext = TableauToolContext<WebMcpServer> & {
@@ -33,7 +34,8 @@ export type TableauWebToolContext = TableauToolContext<WebMcpServer> & {
 // An extension of the RequestHandlerExtra type that includes the TableauWebToolContext
 export type TableauWebRequestHandlerExtra = TableauWebToolContext & {
   config: Config;
-} & ServerContext;
+} & ServerContext &
+  HandlerCompatFields;
 
 // An extension of ToolCallback that includes additional context in the extra parameter
 export type TableauWebToolCallback<

@@ -133,19 +133,23 @@ export class McpClient {
     expect(result.content).toHaveLength(1);
     expect(result.content[0].type).toBe(contentType);
 
+    const block = result.content[0];
+
     if (result.isError) {
-      const content = result.content[0][contentType === 'text' ? 'text' : 'data'];
+      const content = block.type === 'text' ? block.text : block.type === 'image' ? block.data : '';
       console.error(content);
       throw new Error(content);
     }
 
     if (contentType === 'text') {
-      const text = result.content[0].text;
+      invariant(block.type === 'text');
+      const text = block.text;
       invariant(typeof text === 'string');
       const response = schema.parse(JSON.parse(text));
       return response;
     } else {
-      const content = result.content[0].data;
+      invariant(block.type === 'image');
+      const content = block.data;
       invariant(typeof content === 'string');
       const response = schema.parse(content);
       return response;

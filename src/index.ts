@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import './zodCompat.js';
+
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
 import dotenv from 'dotenv';
 
