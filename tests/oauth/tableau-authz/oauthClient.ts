@@ -1,17 +1,73 @@
-/* @mcp-codemod-error Unknown SDK import path: @modelcontextprotocol/sdk/client. Manual migration required. */
 import {
   CallToolRequest,
+  Client,
   ListToolsRequest,
   ListToolsResult,
   OAuthClientMetadata,
+  OAuthClientProvider,
+  StoredOAuthClientInformation,
+  StoredOAuthTokens,
   StreamableHTTPClientTransport,
   UnauthorizedError,
 } from '@modelcontextprotocol/client';
 import { CallToolResultSchema, ListToolsResultSchema } from '@modelcontextprotocol/core';
-import { Client } from '@modelcontextprotocol/sdk/client';
-/* @mcp-codemod-error Unknown SDK import path: @modelcontextprotocol/sdk/examples/client/simpleOAuthClientProvider.js. Manual migration required. */
-import { InMemoryOAuthClientProvider } from '@modelcontextprotocol/sdk/examples/client/simpleOAuthClientProvider.js';
 import z from 'zod';
+
+/**
+ * In-memory OAuth client provider. v2 dropped the SDK example that v1 shipped at
+ * `@modelcontextprotocol/sdk/examples/client/simpleOAuthClientProvider.js`.
+ */
+class InMemoryOAuthClientProvider implements OAuthClientProvider {
+  private _clientInformation?: StoredOAuthClientInformation;
+  private _tokens?: StoredOAuthTokens;
+  private _codeVerifier?: string;
+
+  constructor(
+    private readonly _redirectUrl: string | URL,
+    private readonly _clientMetadata: OAuthClientMetadata,
+    private readonly _onRedirect: (url: URL) => void,
+    public readonly clientMetadataUrl?: string,
+  ) {}
+
+  get redirectUrl(): string | URL {
+    return this._redirectUrl;
+  }
+
+  get clientMetadata(): OAuthClientMetadata {
+    return this._clientMetadata;
+  }
+
+  clientInformation(): StoredOAuthClientInformation | undefined {
+    return this._clientInformation;
+  }
+
+  saveClientInformation(clientInformation: StoredOAuthClientInformation): void {
+    this._clientInformation = clientInformation;
+  }
+
+  tokens(): StoredOAuthTokens | undefined {
+    return this._tokens;
+  }
+
+  saveTokens(tokens: StoredOAuthTokens): void {
+    this._tokens = tokens;
+  }
+
+  redirectToAuthorization(authorizationUrl: URL): void {
+    this._onRedirect(authorizationUrl);
+  }
+
+  saveCodeVerifier(codeVerifier: string): void {
+    this._codeVerifier = codeVerifier;
+  }
+
+  codeVerifier(): string {
+    if (!this._codeVerifier) {
+      throw new Error('No code verifier saved');
+    }
+    return this._codeVerifier;
+  }
+}
 
 import { WebToolName } from '../../../src/tools/web/toolName.js';
 import invariant from '../../../src/utils/invariant.js';
@@ -75,19 +131,23 @@ export class OAuthClient {
   }
 
   setNotificationHandler(): void {
-    this.client.setNotificationHandler('notifications/message', (notification) => {
-      console.debug('[OAuthClient] Notification received:');
-      try {
-        if (typeof notification.params.data === 'string') {
-          const data = JSON.stringify(JSON.parse(notification.params.data), null, 2);
-          console.debug(data);
-        } else {
-          console.debug(notification.params.data);
+    this.client.setNotificationHandler(
+      'notifications/message',
+      { params: z.object({ data: z.unknown().optional() }).passthrough() },
+      (params) => {
+        console.debug('[OAuthClient] Notification received:');
+        try {
+          if (typeof params.data === 'string') {
+            const data = JSON.stringify(JSON.parse(params.data), null, 2);
+            console.debug(data);
+          } else {
+            console.debug(params.data);
+          }
+        } catch {
+          console.debug(params.data);
         }
-      } catch {
-        console.debug(notification.params.data);
-      }
-    });
+      },
+    );
   }
 
   async attemptConnection(getAuthZCodeFn?: GetAuthZCodeFn): Promise<void> {

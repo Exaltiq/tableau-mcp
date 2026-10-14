@@ -5,8 +5,9 @@ import { SiteRole } from '../../../sdks/tableau/types/user.js';
 import { WebMcpServer } from '../../../server.web.js';
 import invariant from '../../../utils/invariant.js';
 import { Provider } from '../../../utils/provider.js';
+import { ZodRawShapeCompat } from '../../zodShape.js';
 import { getMockRequestHandlerExtra } from '../toolContext.mock.js';
-import { advertisedInputSchema } from './knowledgeSchemaTestUtils.js';
+import { advertisedInputSchema, objectFromShape } from './knowledgeSchemaTestUtils.js';
 import { getManageKnowledgeContextTool, validateArgs } from './manageKnowledgeContext.js';
 
 const mocks = vi.hoisted(() => ({
@@ -77,10 +78,10 @@ describe('manageKnowledgeContextTool', () => {
     const objectSchema = objectFromShape(paramsSchema as ZodRawShapeCompat);
 
     expect(
-      safeParse(objectSchema, { action: 'create', statements: [], isGlobal: true }).success,
+      objectSchema.safeParse({ action: 'create', statements: [], isGlobal: true }).success,
     ).toBe(false);
     expect(
-      safeParse(objectSchema, {
+      objectSchema.safeParse({
         action: 'create',
         statements: [{ statement: 'AOV = revenue / orders' }],
         isGlobal: true,

@@ -1,6 +1,6 @@
 import { ZodiosError } from '@zodios/core';
 import { Err } from 'ts-results-es';
-import { fromError } from 'zod-validation-error/v3';
+import { fromError } from 'zod-validation-error';
 
 import { LoadWorkbookXmlError } from '../desktop/commands/workbook/loadWorkbookXml.js';
 import { ExecuteCommandError } from '../desktop/toolExecutor/toolExecutor.js';

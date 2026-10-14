@@ -9,7 +9,5 @@ export function getMockRequestHandlerExtra(): TableauDesktopRequestHandlerExtra 
     server: new DesktopMcpServer(),
     signal: new AbortController().signal,
     requestId: 2,
-    sendNotification: vi.fn(),
-    sendRequest: vi.fn(),
-  };
+  } as unknown as TableauDesktopRequestHandlerExtra;
 }

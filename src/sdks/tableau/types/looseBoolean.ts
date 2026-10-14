@@ -14,20 +14,24 @@ import { z } from 'zod';
  *
  * Because the transform's output type is `boolean`, a field using this schema
  * infers as a REQUIRED `boolean` on the output side while still accepting an
- * absent key on the input side.
+ * absent key on the input side. `.optional()` is what makes a missing object
+ * key succeed under Zod 4; the transform still maps that absence to `false`.
  */
-export const looseBooleanFalsy = z.unknown().transform((value) => {
-  if (typeof value === 'boolean') {
-    return value;
-  }
-  if (typeof value === 'string') {
-    const normalized = value.trim().toLowerCase();
-    if (normalized === 'true') {
-      return true;
+export const looseBooleanFalsy = z
+  .unknown()
+  .optional()
+  .transform((value) => {
+    if (typeof value === 'boolean') {
+      return value;
     }
-    if (normalized === 'false') {
-      return false;
+    if (typeof value === 'string') {
+      const normalized = value.trim().toLowerCase();
+      if (normalized === 'true') {
+        return true;
+      }
+      if (normalized === 'false') {
+        return false;
+      }
     }
-  }
-  return false;
-});
+    return false;
+  });

@@ -1,3 +1,5 @@
+import './zodCompat.js';
+
 import { Ok } from 'ts-results-es';
 
 import { stubDefaultEnvVars, testProductVersion } from './testShared.js';

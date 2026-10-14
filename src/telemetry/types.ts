@@ -19,7 +19,10 @@ export const noopTelemetryConfigSchema = z.object({
  */
 export const providerConfigSchema = z
   .object({
-    module: z.string({ required_error: 'Custom provider requires "module" path' }),
+    module: z.string({
+      error: (issue) =>
+        issue.input === undefined ? 'Custom provider requires "module" path' : undefined,
+    }),
   })
   .passthrough();
 

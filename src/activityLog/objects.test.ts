@@ -1,4 +1,5 @@
 import { WebMcpServer } from '../server.web.js';
+import { ZodRawShapeCompat } from '../tools/zodShape.js';
 import { testProductVersion } from '../testShared.js';
 import { webToolNames } from '../tools/web/toolName.js';
 import { webToolFactories } from '../tools/web/tools.js';

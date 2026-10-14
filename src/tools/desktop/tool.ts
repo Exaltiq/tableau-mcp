@@ -1,10 +1,10 @@
 import { CallToolResult, RequestId } from '@modelcontextprotocol/server';
-import { ZodRawShape } from 'zod';
 
 import { log } from '../../logging/logger.js';
 import { DesktopMcpServer } from '../../server.desktop.js';
 import { getExceptionMessage } from '../../utils/getExceptionMessage.js';
 import { LogAndExecuteParams, Tool } from '../tool.js';
+import { AnySchema, ZodRawShapeCompat } from '../zodShape.js';
 import { TableauDesktopRequestHandlerExtra, TableauDesktopToolCallback } from './toolContext.js';
 import { DesktopToolName } from './toolName.js';
 
@@ -19,7 +19,7 @@ export type DesktopToolLogAndExecuteParams<
   Args extends undefined | ZodRawShapeCompat | AnySchema,
 > = LogAndExecuteParams<T, DesktopMcpServer, TableauDesktopRequestHandlerExtra, Args>;
 
-export class DesktopTool<Args extends ZodRawShape | undefined = undefined> extends Tool<
+export class DesktopTool<Args extends ZodRawShapeCompat | undefined = undefined> extends Tool<
   DesktopMcpServer,
   DesktopToolName,
   TableauDesktopRequestHandlerExtra,

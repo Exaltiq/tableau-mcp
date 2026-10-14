@@ -5,6 +5,7 @@ import { SiteRole } from '../../../sdks/tableau/types/user.js';
 import { WebMcpServer } from '../../../server.web.js';
 import invariant from '../../../utils/invariant.js';
 import { Provider } from '../../../utils/provider.js';
+import { ZodRawShapeCompat } from '../../zodShape.js';
 import { getMockRequestHandlerExtra } from '../toolContext.mock.js';
 import { advertisedInputSchema } from './knowledgeSchemaTestUtils.js';
 import { getQueryKnowledgeContextTool, validateQueryArgs } from './queryKnowledgeContext.js';
