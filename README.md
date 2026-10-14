@@ -1,5 +1,7 @@
  # Tableau MCP
 
+Fork of [tableau/tableau-mcp](https://github.com/tableau/tableau-mcp).
+
 [![Tableau Supported](https://img.shields.io/badge/Support%20Level-Tableau%20Supported-53bd92.svg)](https://www.tableau.com/support-levels-it-and-developer-tools)
 
 [![Build and Test](https://github.com/tableau/tableau-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/tableau/tableau-mcp/actions/workflows/ci.yml)
