@@ -38,6 +38,9 @@ export class DesktopMcpServer extends Server {
         const tableauToolCallback = await Provider.from(callback);
         const tableauRequestHandlerExtra: TableauDesktopRequestHandlerExtra = {
           ...extra,
+          requestId: extra.mcpReq.id,
+          signal: extra.mcpReq.signal,
+          authInfo: extra.http?.authInfo,
           config,
           getExecutor: async (sessionId: string) => {
             return await this.sessionManager.getExecutor(sessionId);
