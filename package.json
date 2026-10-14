@@ -132,5 +132,14 @@
   },
   "engines": {
     "node": ">=22.7.5"
+  },
+  "//overrides": "@zodios/core peers zod ^3 and has no Zod 4 release: https://github.com/ecyrbe/zodios/issues/661. The override below supplies this package's Zod 4.",
+  "overrides": {
+    "@zodios/core": {
+      "zod": "$zod"
+    },
+    "@openai/agents": {
+      "zod": "$zod"
+    }
   }
 }
