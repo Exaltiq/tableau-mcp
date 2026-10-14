@@ -1,6 +1,6 @@
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
-import { type Result, ResultSchema } from '@modelcontextprotocol/sdk/types.js';
+import type { Result } from '@modelcontextprotocol/client';
+import { Client, InMemoryTransport } from '@modelcontextprotocol/client';
+import { ResultSchema } from '@modelcontextprotocol/core';
 import { describe, expect, it, vi } from 'vitest';
 
 import { registerSkillMethodHandlers } from './methods.js';
@@ -36,7 +36,7 @@ async function listSkills(
 ): Promise<Result> {
   const { McpServer } = await vi.importActual<
     typeof import('@modelcontextprotocol/sdk/server/mcp.js')
-  >('@modelcontextprotocol/sdk/server/mcp.js');
+  >('@modelcontextprotocol/server');
   const mcpServer = new McpServer({ name: 'test', version: '0.0.0' });
   registerSkillMethodHandlers(mcpServer, registry);
 

@@ -1,5 +1,4 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { InitializeRequest } from '@modelcontextprotocol/sdk/types.js';
+import { InitializeRequest, McpServer } from '@modelcontextprotocol/server';
 
 import { getFeatureGate } from './features/init.js';
 import { ClientCapabilitiesWithUiExtension } from './server/mcpUiCapability.js';

@@ -1,4 +1,4 @@
-import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { CallToolResult } from '@modelcontextprotocol/server';
 
 import { getConfig } from '../../../../config.js';
 import { RestApi } from '../../../../sdks/tableau/restApi.js';

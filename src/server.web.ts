@@ -3,13 +3,12 @@ import {
   registerAppTool,
   RESOURCE_MIME_TYPE,
 } from '@modelcontextprotocol/ext-apps/server';
-import { McpServer, ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js';
 import {
+  McpServer,
   ReadResourceResult,
-  ServerNotification,
-  ServerRequest,
-} from '@modelcontextprotocol/sdk/types.js';
+  ServerContext,
+  ToolCallback,
+} from '@modelcontextprotocol/server';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
@@ -139,7 +138,7 @@ export class WebMcpServer extends Server {
     for (const tool of await this._getToolsToRegister(tableauAuthInfo)) {
       const toolCallback: ToolCallback<typeof tool.paramsSchema> = async (
         args: typeof tool.paramsSchema,
-        extra: RequestHandlerExtra<ServerRequest, ServerNotification>,
+        extra: ServerContext,
       ) => {
         if (config.breakGlassDisableGlobally) {
           throw new ServiceUnavailableError(
@@ -148,7 +147,7 @@ export class WebMcpServer extends Server {
         }
 
         const requestOverridesHeader =
-          extra.requestInfo?.headers[X_TABLEAU_MCP_CONFIG_HEADER]?.toString() ?? '';
+          extra.http?.req?.headers[X_TABLEAU_MCP_CONFIG_HEADER]?.toString() ?? '';
         const requestOverrides = getRequestOverridesFromHeader(requestOverridesHeader);
         const tableauToolCallback = await Provider.from(tool.callback);
         const tableauRequestHandlerExtra: TableauWebRequestHandlerExtra = {
@@ -156,14 +155,14 @@ export class WebMcpServer extends Server {
           config,
           server: this,
           get tableauAuthInfo() {
-            return getTableauAuthInfo(extra.authInfo);
+            return getTableauAuthInfo(extra.http?.authInfo);
           },
           _userLuid: undefined,
           _siteLuid: undefined,
           getUserLuid() {
             return (
               tableauRequestHandlerExtra._userLuid ??
-              getTableauAuthInfo(extra.authInfo)?.userId ??
+              getTableauAuthInfo(extra.http?.authInfo)?.userId ??
               ''
             );
           },
@@ -173,7 +172,7 @@ export class WebMcpServer extends Server {
           getSiteLuid() {
             return (
               tableauRequestHandlerExtra._siteLuid ??
-              getTableauAuthInfo(extra.authInfo)?.siteId ??
+              getTableauAuthInfo(extra.http?.authInfo)?.siteId ??
               ''
             );
           },
@@ -181,7 +180,7 @@ export class WebMcpServer extends Server {
             tableauRequestHandlerExtra._siteLuid = siteLuid;
           },
           getSiteName() {
-            return getTableauAuthInfo(extra.authInfo)?.siteName ?? config.siteName;
+            return getTableauAuthInfo(extra.http?.authInfo)?.siteName ?? config.siteName;
           },
           getConfigWithOverrides: async () =>
             getConfigWithOverrides({ restApiArgs: tableauRequestHandlerExtra, requestOverrides }),
@@ -342,6 +341,7 @@ export class WebMcpServer extends Server {
     tool: WebTool<any>,
     toolCallback: ToolCallback<typeof tool.paramsSchema>,
   ): Promise<void> => {
+    /* @mcp-codemod-error Could not verify `inputSchema` is a schema object. Raw shapes are deprecated in v2 — pass a Standard Schema object (e.g. z.object({ … })); no change is needed if it already is one. */
     this.mcpServer.registerTool(
       tool.name,
       {

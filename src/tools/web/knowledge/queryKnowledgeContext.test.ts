@@ -1,5 +1,4 @@
-import { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
-import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { CallToolResult } from '@modelcontextprotocol/server';
 
 import { useRestApi } from '../../../restApiInstance.js';
 import { SiteRole } from '../../../sdks/tableau/types/user.js';

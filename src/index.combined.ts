@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { SetLevelRequestSchema } from '@modelcontextprotocol/sdk/types.js';
+import { McpServer } from '@modelcontextprotocol/server';
+import { StdioServerTransport } from '@modelcontextprotocol/server/stdio';
 import dotenv from 'dotenv';
 
 import pkg from '../package.json';
@@ -76,7 +75,7 @@ async function startServer(): Promise<void> {
   const desktopMcpServer = new DesktopMcpServer({ mcpServer });
   await desktopMcpServer.registerTools();
 
-  mcpServer.server.setRequestHandler(SetLevelRequestSchema, async (request) => {
+  mcpServer.server.setRequestHandler('logging/setLevel', async (request) => {
     setNotificationLevel(desktopMcpServer.mcpServer, request.params.level);
     return {};
   });
