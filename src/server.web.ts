@@ -147,11 +147,14 @@ export class WebMcpServer extends Server {
         }
 
         const requestOverridesHeader =
-          extra.http?.req?.headers[X_TABLEAU_MCP_CONFIG_HEADER]?.toString() ?? '';
+          extra.http?.req?.headers.get(X_TABLEAU_MCP_CONFIG_HEADER) ?? '';
         const requestOverrides = getRequestOverridesFromHeader(requestOverridesHeader);
         const tableauToolCallback = await Provider.from(tool.callback);
         const tableauRequestHandlerExtra: TableauWebRequestHandlerExtra = {
           ...extra,
+          requestId: extra.mcpReq.id,
+          signal: extra.mcpReq.signal,
+          authInfo: extra.http?.authInfo,
           config,
           server: this,
           get tableauAuthInfo() {
@@ -367,6 +370,8 @@ export class WebMcpServer extends Server {
     // `_meta.ui.resourceUri` to know which resource to fetch and render as an
     // interactive UI.
     registerAppTool(
+      // ext-apps still types its server argument against MCP SDK v1.
+      // @ts-expect-error -- v2 McpServer.registerTool is not the v1 signature ext-apps expects
       this.mcpServer,
       tool.name,
       {
