@@ -72,7 +72,10 @@
     "@aws-sdk/client-s3": "^3.1095.0",
     "@aws-sdk/s3-request-presigner": "^3.1095.0",
     "@mjackson/multipart-parser": "^0.10.1",
+    "@modelcontextprotocol/core": "2.3.1",
     "@modelcontextprotocol/ext-apps": "^1.7.2",
+    "@modelcontextprotocol/node": "2.1.1",
+    "@modelcontextprotocol/server": "2.3.1",
     "@xmldom/xmldom": "^0.9.10",
     "@zodios/core": "^10.9.6",
     "cookie-parser": "^1.4.7",
@@ -88,15 +91,12 @@
     "uuid": "^14.0.1",
     "xpath": "^0.0.34",
     "zod": "^3.24.3",
-    "zod-validation-error": "^4.0.1",
-    "@modelcontextprotocol/server": "^2.3.1",
-    "@modelcontextprotocol/node": "^2.1.1",
-    "@modelcontextprotocol/core": "^2.3.1",
-    "@modelcontextprotocol/client": "^2.3.1"
+    "zod-validation-error": "^4.0.1"
   },
   "devDependencies": {
     "@anthropic-ai/mcpb": "^2.1.2",
     "@eslint/eslintrc": "^3.3.1",
+    "@modelcontextprotocol/client": "2.3.1",
     "@eslint/js": "^9.25.1",
     "@openai/agents": "^0.1.9",
     "@playwright/test": "^1.58.2",
