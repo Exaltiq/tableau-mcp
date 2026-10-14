@@ -1,9 +1,5 @@
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import {
-  isInitializeRequest,
-  LoggingLevel,
-  SetLevelRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js';
+import { NodeStreamableHTTPServerTransport } from '@modelcontextprotocol/node';
+import { isInitializeRequest, LoggingLevel } from '@modelcontextprotocol/server';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Request, RequestHandler, Response } from 'express';
@@ -126,7 +122,7 @@ export async function startExpressServer({
 
   async function createMcpServer(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      let transport: StreamableHTTPServerTransport;
+      let transport: NodeStreamableHTTPServerTransport;
 
       if (config.disableSessionManagement) {
         const capabilities = isInitializeRequest(req.body)
@@ -134,7 +130,7 @@ export async function startExpressServer({
           : undefined;
         const clientId = req.auth?.clientId;
         const server = new WebMcpServer({ capabilities, clientId });
-        transport = new StreamableHTTPServerTransport({
+        transport = new NodeStreamableHTTPServerTransport({
           sessionIdGenerator: undefined,
         });
 
@@ -210,12 +206,12 @@ export async function startExpressServer({
 
 async function connect(
   server: Server,
-  transport: StreamableHTTPServerTransport,
+  transport: NodeStreamableHTTPServerTransport,
   logLevel: LoggingLevel,
   authInfo: TableauAuthInfo | undefined,
 ): Promise<void> {
   await server.registerTools(authInfo);
-  server.mcpServer.server.setRequestHandler(SetLevelRequestSchema, async (request) => {
+  server.mcpServer.server.setRequestHandler('logging/setLevel', async (request) => {
     setNotificationLevel(server.mcpServer, request.params.level);
     return {};
   });

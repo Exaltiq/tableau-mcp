@@ -1,4 +1,4 @@
-import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { CallToolResult } from '@modelcontextprotocol/server';
 
 import { Config } from '../../../config.js';
 import { getFeatureGate } from '../../../features/init.js';

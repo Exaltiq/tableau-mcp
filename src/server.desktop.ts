@@ -1,6 +1,4 @@
-import { McpServer, ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js';
-import { ServerNotification, ServerRequest } from '@modelcontextprotocol/sdk/types.js';
+import { McpServer, ServerContext, ToolCallback } from '@modelcontextprotocol/server';
 
 import pkg from '../package.json';
 import { getDesktopConfig } from './config.desktop.js';
@@ -35,7 +33,7 @@ export class DesktopMcpServer extends Server {
     } of await this._getToolsToRegister()) {
       const toolCallback: ToolCallback<typeof paramsSchema> = async (
         args: typeof paramsSchema,
-        extra: RequestHandlerExtra<ServerRequest, ServerNotification>,
+        extra: ServerContext,
       ) => {
         const tableauToolCallback = await Provider.from(callback);
         const tableauRequestHandlerExtra: TableauDesktopRequestHandlerExtra = {
@@ -50,6 +48,7 @@ export class DesktopMcpServer extends Server {
         return tableauToolCallback(args, tableauRequestHandlerExtra);
       };
 
+      /* @mcp-codemod-error Could not verify `inputSchema` is a schema object. Raw shapes are deprecated in v2 — pass a Standard Schema object (e.g. z.object({ … })); no change is needed if it already is one. */
       this.mcpServer.registerTool(
         name,
         {

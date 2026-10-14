@@ -1,16 +1,16 @@
-import { Client } from '@modelcontextprotocol/sdk/client';
-import { UnauthorizedError } from '@modelcontextprotocol/sdk/client/auth.js';
-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
-import { InMemoryOAuthClientProvider } from '@modelcontextprotocol/sdk/examples/client/simpleOAuthClientProvider.js';
-import { OAuthClientMetadata } from '@modelcontextprotocol/sdk/shared/auth.js';
+/* @mcp-codemod-error Unknown SDK import path: @modelcontextprotocol/sdk/client. Manual migration required. */
 import {
   CallToolRequest,
-  CallToolResultSchema,
   ListToolsRequest,
   ListToolsResult,
-  ListToolsResultSchema,
-  LoggingMessageNotificationSchema,
-} from '@modelcontextprotocol/sdk/types.js';
+  OAuthClientMetadata,
+  StreamableHTTPClientTransport,
+  UnauthorizedError,
+} from '@modelcontextprotocol/client';
+import { CallToolResultSchema, ListToolsResultSchema } from '@modelcontextprotocol/core';
+import { Client } from '@modelcontextprotocol/sdk/client';
+/* @mcp-codemod-error Unknown SDK import path: @modelcontextprotocol/sdk/examples/client/simpleOAuthClientProvider.js. Manual migration required. */
+import { InMemoryOAuthClientProvider } from '@modelcontextprotocol/sdk/examples/client/simpleOAuthClientProvider.js';
 import z from 'zod';
 
 import { WebToolName } from '../../../src/tools/web/toolName.js';
@@ -75,7 +75,7 @@ export class OAuthClient {
   }
 
   setNotificationHandler(): void {
-    this.client.setNotificationHandler(LoggingMessageNotificationSchema, (notification) => {
+    this.client.setNotificationHandler('notifications/message', (notification) => {
       console.debug('[OAuthClient] Notification received:');
       try {
         if (typeof notification.params.data === 'string') {
